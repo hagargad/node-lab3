@@ -1,0 +1,34 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        let user =  <%- JSON.stringify(user) %>
+
+        alert(user.name);
+    </script>
+</head>
+<body style="background-color: <%= user.age>30 ?"green":"red" %>">
+    <%- include("header.ejs") %>
+
+    <h1>Contacts</h1>
+    <h2><%= email %></h2>
+
+
+    <h1>User Details</h1>
+    <h2>Name:<%= user.name  %></h2>
+    <h2>Age:<%= user.age  %></h2>
+    <h2>Address:<%= user.address  %></h2>
+    <h2>Mobile Phones</h2>
+    <%
+        for(let phone of user.mobilePhones){
+     %>       
+            <h3><%= phone %></h3>
+     <%
+        }
+
+    %>
+</body>
+</html>

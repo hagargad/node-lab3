@@ -1,0 +1,114 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        function deleteEmp(id){
+            fetch("http://localhost:8080/deleteemp?id="+id,{
+                method:"delete"
+            }).then(x=>x.json()).then(res=>alert(res.msg));
+        }
+
+        function edit(emp){
+            console.log(emp);
+            /*
+            Name:<input type="text" id="editname"/><br/>
+        Age:<input type="number" id="editage"/><br/>
+        Salary:<input type="number" id="editsalary"/><br/>
+        <input type="hidden" id="editempid"/><br/>
+            */
+            document.getElementById("editname").value=emp.name;
+            document.getElementById("editage").value=emp.age;
+            document.getElementById("editsalary").value=emp.salary;
+            document.getElementById("editempid").value=emp._id;
+
+        }
+
+        function getEmps(name){
+            fetch("http://localhost:8080/emps?name="+name).then(x=>x.json()).then(emps=>{
+                let html =`
+                <h1>Employees</h1>
+                <form action="emps.html" method="get">Search<input type="text" name="name" value="${name}" /><input type="submit" value="search"/></form>
+                `
+
+                
+                
+                let empsTrs = emps.map(emp=>{
+                    return `<tr><td>${emp._id}</td><td>${emp.name}</td><td>${emp.age}</td><td>${emp.salary}</td><td>
+                    <button onclick="deleteEmp('${emp._id}')">Delete</delete>
+                    <button onclick='edit(${JSON.stringify(emp)})'>Edit</delete>
+                    </td></tr>`
+                })
+
+                html += `<table><tr><td>Id</td><td>Name</td><td>Age</td><td>Salary</td><td>Actions</td></tr>${empsTrs.join("")}</table>`
+                document.getElementById("table").innerHTML=html;
+            })
+        }
+        getEmps("");
+
+
+        function empformSubmit(e){
+            e.preventDefault();
+            let emp = {
+                name : document.getElementById("name").value,
+                age : document.getElementById("age").value,
+                salary : document.getElementById("salary").value,
+            }
+            console.log(emp);
+            fetch("http://localhost:8080/addemp",{
+                method:"POST",
+                headers:{
+                    'content-type':'application/json'
+                },
+                body:JSON.stringify(emp)
+            }).then(x=>x.json()).then(res=>{
+                alert(res.msg);
+                getEmps("");
+            });
+        }
+
+
+        function editempformSubmit(e){
+            e.preventDefault();
+            let emp = {
+                name : document.getElementById("editname").value,
+                age : document.getElementById("editage").value,
+                salary : document.getElementById("editsalary").value,
+                _id : document.getElementById("editempid").value,
+            }
+            console.log(emp);
+            fetch("http://localhost:8080/editemp",{
+                method:"PUT",
+                headers:{
+                    'content-type':'application/json'
+                },
+                body:JSON.stringify(emp)
+            }).then(x=>x.json()).then(res=>{
+                alert(res.msg);
+                getEmps("");
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Add</h1>
+    <form id="empform"  onsubmit="empformSubmit(event)">
+        Name:<input type="text" id="name"/><br/>
+        Age:<input type="number" id="age"/><br/>
+        Salary:<input type="number" id="salary"/><br/>
+
+        <input type="submit" value="add"/>
+    </form>
+    <h1>Edit</h1>
+    <form id="editempform"  onsubmit="editempformSubmit(event)">
+        Name:<input type="text" id="editname"/><br/>
+        Age:<input type="number" id="editage"/><br/>
+        Salary:<input type="number" id="editsalary"/><br/>
+        <input type="hidden" id="editempid"/><br/>
+        <input type="submit" value="save"/>
+    </form>
+    <div id="table"></div>
+</body>
+</html>
